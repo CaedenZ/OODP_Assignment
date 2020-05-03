@@ -3,8 +3,6 @@ package Controller;
 import Persistence.Persistence;
 import View.View;
 
-import java.util.List;
-
 public abstract class PersistenceController implements Controller {
     private final Persistence persistence;
 

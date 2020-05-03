@@ -1,15 +1,10 @@
 package Controller.FunctionManager;
 
-import java.io.PrintStream;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 import Controller.PersistenceController;
-import Model.Room.BedType;
 import Model.Room.Room;
 import Persistence.Entity;
-import Model.Guest.Guest;
 import Model.Room.RoomStatus;
 import Model.Room.RoomTypeEnum;
 import Persistence.Persistence;

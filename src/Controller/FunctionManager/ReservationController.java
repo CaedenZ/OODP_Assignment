@@ -26,7 +26,6 @@ public class ReservationController extends EntityController<Reservation> {
 
     private static final String REGEX_NUMBERS = "[0-9]+";
     private static final String PATTERN_VALID_DATE = "d.MM.yyyy";
-    private static final String PATTERN_PRINT_VALID_DATE = "dd.mm.yyyy";
     private static final String REGEX_VALID_DATE = "^(?:(?:31(\\/|-|\\.)(?:0?[13578]|1[02]))\\1|(?:(?:29|30)(\\/|-|\\.)(?:0?[1,3-9]|1[0-2])\\2))(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$|^(?:29(\\/|-|\\.)0?2\\3(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\\d|2[0-8])(\\/|-|\\.)(?:(?:0?[1-9])|(?:1[0-2]))\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$";
     private static final String REGEX_BOOLEAN = "^(?:(0|1))$";
     private static final String REGEX_ONE_ALPHA_NUMERIC_CHARACTER = "^.*[a-zA-Z0-9]+.*$";
@@ -45,7 +44,6 @@ public class ReservationController extends EntityController<Reservation> {
     private static final String CREATE_GUEST = "Create a guest before making a reservation with these guest details.\n\n";
     private static final String SEARCH_RESERVATION = "whether the reservation should be searched by \n1) Reservation ID\n0) Guest name\n\nPlease select an option";
     private static final String RESERVATION_ID = "the reservation ID";
-    private static final String RESERVATION = "reservation";
     private static final String NUMBER_RESERVATION = "number of the reservation";
     private static final String CONTINUE_RESERVATION_WAITLIST = "whether you want to continue the reservation and be put on waitlist for such a room : \n1) Yes\n0) No\n\nPlease select an option";
 
@@ -323,7 +321,7 @@ public class ReservationController extends EntityController<Reservation> {
         // get persistence
         Persistence persistence = this.getPersistenceImpl();
 
-        // add guest to ArrayList of guests
+        // add reservation to ArrayList of reservations
         persistence.createCache(reservation, Reservation.class);
 
         // print reservation
@@ -612,12 +610,17 @@ public class ReservationController extends EntityController<Reservation> {
             if(reservation.getStatus() != ReservationStatus.CHECKED_IN) {
                 // remove reservation
                 reservations.remove(reservation);
+
+                view.displayText("The reservation has been removed.\n\n");
+
+                // check waitlist
+                checkWaitlist(reservation);
+            }
+            else
+            {
+                view.displayText("The reservation cannot be removed since it is already checked in.\n\n");
             }
 
-            view.displayText("The reservation has been removed.\n\n");
-
-            // check waitlist
-            checkWaitlist(reservation);
         }
         catch(Exception e)
         {
@@ -841,21 +844,10 @@ public class ReservationController extends EntityController<Reservation> {
 
     }
 
-    @Override
-    protected boolean retrieve(View view) throws Exception {
-        return true;
-    }
 
     public void createExpirationTimer(Timer timer)
     {
-        //expireReservations();
 
-        // get today's time at 4 pm
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY,16);
-        cal.set(Calendar.MINUTE,0);
-        cal.set(Calendar.SECOND,0);
-        cal.set(Calendar.MILLISECOND,0);
         Date date = new Date();
 
         // schedule a task to be executed every 24 hours
@@ -905,6 +897,12 @@ public class ReservationController extends EntityController<Reservation> {
             {
                 //reservation has expired -> remove reservation
                 reservations.remove(reservation);
+
+                // get room of reservation
+                Room room = reservation.getRoom();
+
+                // set room status to vacant
+                room.setStatus(RoomStatus.VACANT);
 
                 // check waitlist
                 checkWaitlist(reservation);

@@ -1,8 +1,6 @@
 package Model.Payment;
 
-import Model.Room.RoomStatus;
 import Model.RoomServiceOrder.RoomServiceOrder;
-import Model.RoomServiceOrder.RoomServiceOrderStatus;
 import Model.Stay.Stay;
 import Persistence.Entity;
 
@@ -10,8 +8,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Calendar;
 
 public class Payment extends Entity {
 
@@ -20,16 +16,15 @@ public class Payment extends Entity {
     private double weekendSurcharge;
     private double tax;
     private PaymentType paymentType;
-    private Stay stay;
 
-    public Payment(DiscountType discountType, double discount, double weekendSurcharge, double tax, Stay stay) {
+    public Payment(DiscountType discountType, double discount, double weekendSurcharge, double tax) {
         this.discountType = discountType;
         this.discount = discount;
         this.weekendSurcharge = weekendSurcharge;
         this.tax = tax;
-        this.stay = stay;
     }
 
+    /*
     public double getWeekendSurcharge() {
         return weekendSurcharge;
     }
@@ -44,9 +39,9 @@ public class Payment extends Entity {
 
     public void setPaymentType(PaymentType paymentType) {
         this.paymentType = paymentType;
-    }
+    }*/
 
-    public String toString()
+    public String print(Stay stay)
     {
         // create a formatter for date
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");

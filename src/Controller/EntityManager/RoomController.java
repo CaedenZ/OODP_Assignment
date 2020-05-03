@@ -391,12 +391,6 @@ public class RoomController extends EntityController<Room> {
 
     }
 
-    @Override
-    protected boolean retrieve(View view) throws Exception {
-
-        return false;
-
-    }
 
     private void checkRoomAvailability(View view) throws Exception {
 
@@ -700,6 +694,7 @@ public class RoomController extends EntityController<Room> {
         return null;
     }
 
+    /*
     public Room getRoom(Room room) {
 
         // get persistence
@@ -726,5 +721,5 @@ public class RoomController extends EntityController<Room> {
         }
 
         return null;
-    }
+    }*/
 }

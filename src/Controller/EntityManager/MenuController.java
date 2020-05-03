@@ -1,9 +1,7 @@
 package Controller.EntityManager;
 
 import Controller.EntityController;
-import Model.Guest.Guest;
 import Model.Menu.MenuItem;
-import Model.Room.RoomType;
 import Persistence.Persistence;
 import Persistence.Entity;
 import View.View;
@@ -20,13 +18,6 @@ public class MenuController extends EntityController<MenuItem> {
     private static final String MENU_ITEM_DESCRIPTION = "the description of the menu item";
     private static final String MENU_ITEM_PRICE = "the price of the menu item";
     private static final String NUMBER_ROOM_TYPE = "number of the menu item";
-
-
-    public final static String KEY_NAME = "name of the menu item";
-    public final static String KEY_DESCRIPTION = "description of the menu item";
-    public final static String KEY_PRICE = "price of the menu item";
-    public final static String KEY_SEARCH = "name of the menu item to search for";
-    public final static String KEY_ID = "ID of the menu item";
 
     public MenuController(Persistence persistence) {
         super(persistence);
@@ -162,7 +153,7 @@ public class MenuController extends EntityController<MenuItem> {
 
             // check whether any room types exist
             if (menuItems.size() == 0) {
-                view.displayText("No menu items exist. Please create a menu item before searching for it\n\n");
+                view.displayText("No menu items exist. Please create a menu item before searching for it.\n\n");
 
                 return null;
             }
@@ -195,12 +186,6 @@ public class MenuController extends EntityController<MenuItem> {
 
         return menuItem;
 
-    }
-
-
-    @Override
-    protected boolean retrieve(View view) throws Exception {
-        return false;
     }
 
     @Override

@@ -57,6 +57,8 @@ public class Main {
 
             ConsoleView creditCardView = new ConsoleView(creditCardController, "Credit Card Management", sc);
 
+
+
             NavigationController mainNav = new NavigationController();
             mainNav.addView(hotelmanagementView);
             mainNav.addView(guestmanagementView);
@@ -69,11 +71,11 @@ public class Main {
 
             persistence.writeAllDataArray();
 
-            timer.cancel();
-            timer.purge();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        timer.cancel();
+        timer.purge();
     }
 }

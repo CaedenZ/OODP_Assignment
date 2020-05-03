@@ -16,18 +16,6 @@ public class OrderItem extends Entity {
         return menuItem;
     }
 
-    /*public void setMenuItem(MenuItem menuItems) {
-        this.menuItem = menuItems;
-    }*/
-
-    public String getOrderRemark() {
-        return orderRemark;
-    }
-
-    public void setRemark(String remarks) {
-        this.orderRemark = remarks;
-    }
-
     @Override
     public String toString() {
 

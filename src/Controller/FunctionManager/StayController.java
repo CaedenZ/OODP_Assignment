@@ -12,15 +12,12 @@ import Model.Payment.Payment;
 import Model.Payment.PaymentType;
 import Model.Room.BedType;
 import Model.Room.Room;
-import Model.Room.RoomStatus;
 import Model.Room.RoomType;
 import Model.Stay.Stay;
-import Model.Stay.StayStatus;
 import Model.Reservation.Reservation;
 import Model.Reservation.ReservationStatus;
 import Persistence.Persistence;
 import View.View;
-import View.Options;
 import Persistence.Entity;
 
 import java.time.LocalDate;
@@ -33,7 +30,6 @@ public class StayController extends EntityController<Stay> {
     private static final String REGEX_VALID_DATE = "^(?:(?:31(\\/|-|\\.)(?:0?[13578]|1[02]))\\1|(?:(?:29|30)(\\/|-|\\.)(?:0?[1,3-9]|1[0-2])\\2))(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$|^(?:29(\\/|-|\\.)0?2\\3(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\\d|2[0-8])(\\/|-|\\.)(?:(?:0?[1-9])|(?:1[0-2]))\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$";
     private static final String REGEX_BOOLEAN = "^(?:(0|1))$";
     private static final String REGEX_ONE_ALPHA_NUMERIC_CHARACTER = "^.*[a-zA-Z0-9]+.*$";
-    //private static final String REGEX_PERCENTAGE = "(^(100([.]0{1,2})?)$)|(^[0-9]{1,2}([.][0-9]{1,2})?$)";
 
     private static final String CHECK_OUT_DATE = "the check out date (format: dd.mm.yyyy)";
     private static final String NUMBER_OF_ADULTS = "the number of adults";
@@ -47,6 +43,7 @@ public class StayController extends EntityController<Stay> {
     private static final String ABORT_STAY = "The booking is aborted.\n";
     private static final String CREATE_GUEST = "Create a guest before making a reservation with these guest details.\n\n";
     private static final String NUMBER_RESERVATION = "number of the reservation";
+
 
     private static final String HAVE_DISCOUNT = "whether you have a discount :\n1) Yes\n0) No\n\nPlease select an option";
     private static final String DISCOUNT_TYPE = "discount type";
@@ -77,7 +74,10 @@ public class StayController extends EntityController<Stay> {
     public List<String> getOptions() {
         return Arrays.asList("Check In (Reservation)",
                 "Check In (Walk In)",
-                "Check Out");
+                "Check Out",
+                "Search a stay",
+                "Print all stays");
+
     }
 
     @Override
@@ -96,6 +96,12 @@ public class StayController extends EntityController<Stay> {
                 break;
             case 2:
                 performCheckOut(view);
+                break;
+            case 3:
+                select(view);
+                break;
+            case 4:
+                show(view);
                 break;
         }
     }
@@ -150,10 +156,11 @@ public class StayController extends EntityController<Stay> {
                     // create stay
                     Stay stay = new Stay(reservation);
 
-                    // add stay to persistence
-                    stays.add(stay);
+                    // add stay to ArrayList of stays
+                    persistence.createCache(stay, Stay.class);
 
-                    view.display(reservation);
+                    // print stay
+                    view.displayText(stay.toString() + "\n\n");
 
                     message = "The above reservation has been checked-in successfully.";
 
@@ -287,10 +294,10 @@ public class StayController extends EntityController<Stay> {
         double tax = Double.parseDouble(stringTax);
 
         // create payment
-        Payment payment = new Payment(discountType, discountAmount, weekendSurcharge, tax, stay);
+        Payment payment = new Payment(discountType, discountAmount, weekendSurcharge, tax);
 
         // print payment receipt
-        view.displayText(payment.toString());
+        view.displayText(payment.print(stay));
 
         // get payment method
         PaymentType paymentType = (PaymentType) view.getInputEnum(PaymentType.class, PAYMENT_TYPE, REGEX_NUMBERS);
@@ -471,48 +478,28 @@ public class StayController extends EntityController<Stay> {
             // get credit card of guest
             CreditCard creditCard = creditCardController.getCreditCard(view, guest);
 
+            // check whether guest was found
+            if(creditCard == null)
+            {
+                return;
+
+            }
+
             // create stays
             Stay stay = new Stay(guest,creditCard, room,LocalDate.now(), checkOutDate, numberOfAdults,numberOfChildren);
 
             // add stay to ArrayList of stays
             persistence.createCache(stay,Stay.class);
 
-            // print reservation
+            // print stay
             view.displayText(stay.toString() + "\n\n");
 
             view.display("\nThe booking has been added to the system.\n");
         }
     }
 
-    /*
-    private ArrayList<Reservation> getReservationsAvalible(Guest guest) throws Exception{
-        Persistence persistence = getPersistenceImpl();
-        ArrayList<Entity> reservations = persistence.retrieveAll(Reservation.class);
-        ArrayList<Reservation> relatedReservations = new ArrayList<>();
-
-        System.out.println(reservations.size());
-
-        for (Entity entity: reservations) {
-            Reservation reservation = (Reservation) entity;
-
-            System.out.println((reservation.getGuest().equals(guest)));
-            System.out.println(reservation.getGuest());
-            System.out.println(guest);
-
-            if ((reservation.getGuest() == guest)&&(reservation.getStatus()== ReservationStatus.CONFIRMED)){
-                relatedReservations.add(reservation);
-            }
-        }
-        return relatedReservations;
-    }*/
-
     @Override
     protected void create(View view) throws Exception {
-    }
-
-    @Override
-    protected boolean retrieve(View view) throws Exception {
-        return true;
     }
 
     @Override
@@ -639,18 +626,43 @@ public class StayController extends EntityController<Stay> {
     }
 
 
-    @Override
     public void show(View view) throws Exception{
+
+        // get persistence
         Persistence persistence = this.getPersistenceImpl();
-        List entityList = new ArrayList();
-        // Provide a predicate to search for matching items
-        Iterable<Stay> stays = persistence.search(Stay.class);
 
-        // Loop through results and add it into the list
-        for(Entity entity: stays)
-            entityList.add(entity);
+        try {
 
-        view.display(entityList);
+            // get all stays
+            ArrayList<Entity> stays = persistence.retrieveAll(Stay.class);
+
+            // check whether any reservation exist
+            if (stays.size() == 0) {
+                view.displayText("No stays exist. Create a stay before printing the stay details.\n\n");
+
+                return;
+            }
+
+            view.displayText("The following stays are on file:\n");
+
+            // iterate through all stays
+            for (Entity entity : stays) {
+
+                // cast to stay object
+                Stay stay = (Stay)entity;
+
+                //print guest
+                view.displayText(stay.toString() + "\n");
+
+            }
+
+            view.displayText("\n");
+        }
+        catch(Exception e)
+        {
+
+        }
+
     }
 
     public Entity getStayByRoomNumber(String roomNumber) throws Exception{

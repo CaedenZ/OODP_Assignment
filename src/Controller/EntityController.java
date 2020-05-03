@@ -15,7 +15,6 @@ public abstract class EntityController<T> extends PersistenceController {
     public List<String> getOptions() {
         return Arrays.asList(
                 "Create " + this.getEntityName().toLowerCase(),
-                "Retrieve/Search " + this.getEntityName().toLowerCase(),
                 "Update " + this.getEntityName().toLowerCase(),
                 "Delete " + this.getEntityName().toLowerCase(),
                 "Show " + this.getEntityName().toLowerCase()
@@ -29,15 +28,12 @@ public abstract class EntityController<T> extends PersistenceController {
                 create(view);
                 break;
             case 1:
-                retrieve(view);
-                break;
-            case 2:
                 update(view);
                 break;
-            case 3:
+            case 2:
                 delete(view);
                 break;
-            case 4:
+            case 3:
                 show(view);
                 break;
         }
@@ -46,8 +42,6 @@ public abstract class EntityController<T> extends PersistenceController {
     protected abstract String getEntityName();
 
     protected abstract void create(View view) throws Exception;
-
-    protected abstract boolean retrieve(View view) throws Exception;
 
     protected abstract void update(View view) throws Exception;
 

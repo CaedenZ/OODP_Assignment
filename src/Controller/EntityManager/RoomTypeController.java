@@ -45,17 +45,13 @@ public class RoomTypeController extends EntityController<RoomType> {
         }
     }
 
-    protected void create(View view) throws Exception
+    protected void create(View view)
     {
 
     }
 
-    protected boolean retrieve(View view) throws Exception
-    {
-        return false;
-    }
 
-    protected void update(View view) throws Exception
+    protected void update(View view)
     {
         // get room type enum
         RoomType roomType = select(view);
@@ -88,12 +84,12 @@ public class RoomTypeController extends EntityController<RoomType> {
         view.displayText("\n\nThe room type has been updated.\n\n");
     }
 
-    protected void delete(View view) throws Exception
+    protected void delete(View view)
     {
 
     }
 
-    protected void show(View view) throws Exception
+    protected void show(View view)
     {
         // get persistence
         Persistence persistence = this.getPersistenceImpl();

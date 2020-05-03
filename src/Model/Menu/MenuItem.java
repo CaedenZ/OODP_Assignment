@@ -39,7 +39,6 @@ public class MenuItem extends Entity {
     }
 
     @Override
-    //TODO: check how that works
     public String toString() {
 
         // format room rate

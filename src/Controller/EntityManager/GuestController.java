@@ -269,11 +269,6 @@ public class GuestController extends EntityController<Guest> {
     }
 
     @Override
-    protected boolean retrieve(View view) throws Exception {
-        return false;
-    }
-
-    @Override
     protected void update(View view) throws Exception {
 
         // search for guest via name

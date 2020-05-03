@@ -1,6 +1,5 @@
 package Model.RoomServiceOrder;
 
-import Model.Menu.MenuItem;
 import Model.StatusEntity;
 
 import java.time.format.DateTimeFormatter;
@@ -21,8 +20,6 @@ public class RoomServiceOrder extends StatusEntity<RoomServiceOrderStatus> {
     public void addOrderItem(OrderItem orderItem)
     {
         orderItems.add(orderItem);
-
-        MenuItem menuItem = orderItem.getMenuItem();
     }
 
     public double getTotalPrice(){
@@ -40,23 +37,6 @@ public class RoomServiceOrder extends StatusEntity<RoomServiceOrderStatus> {
         super.setStatus(RoomServiceOrderStatus.CONFIRMED);
         totalPrice = getTotalPrice();
     }
-
-    /*
-    public ArrayList<OrderItem> getOrderItems()
-    {
-        return orderItems;
-    }
-
-
-    public void setRoomServiceOrderStatus(RoomServiceOrderStatus roomServiceOrderStatus)
-    {
-        super.setStatus(roomServiceOrderStatus);
-    }
-    //
-    public RoomServiceOrderStatus getRoomServiceOrderStatus()
-    {
-        return super.getStatus();
-    }*/
 
     @Override
     public String toString() {

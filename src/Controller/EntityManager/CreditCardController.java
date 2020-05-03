@@ -289,11 +289,6 @@ public class CreditCardController extends EntityController<CreditCard> {
 
     }
 
-    protected boolean retrieve(View view)
-    {
-        return false;
-    }
-
     protected void update(View view)
     {
 
